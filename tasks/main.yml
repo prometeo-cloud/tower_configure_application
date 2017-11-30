@@ -1,4 +1,15 @@
 ---
+
+# Bootstrap tower
+- name: Copy bootstrap script to tower
+  template:
+    src: "{{ role_path }}/templates/bootstrap-tower.sh.j2"
+    dest: "{{tower_dest}}/bootstrap-tower.sh"
+    mode: u+x
+  
+- name: Run bootstrap script
+  shell: "{{tower_dest}}/bootstrap-tower.sh"
+
 # Install new template
 - name: Copy script to tower
   template:
@@ -12,7 +23,7 @@
   with_items:
     - add-jobs.sh
   
-- name: Cleanup script
+- name: Cleanup after ourselves
   file: 
     state: absent
     path: "{{ tower_dest }}/{{ item }}"
