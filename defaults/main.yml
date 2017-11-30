@@ -1,0 +1,543 @@
+---
+# Defaults for role
+inventories:
+  - demo_lab01
+tower_license:
+  company_name: "Example"
+  contact_email: "license@example.com"
+  contact_name: "Example license"
+  hostname: "example"
+  instance_count: 1234
+  license_date: 12345678
+  license_key: "example_license_key_replace_me"
+  license_type: "enterprise"
+  subscription_name: "Example Subscription Name"
+  eula_accepted: true
+  trial: true
+ldap_configuration:
+  auth_ldap_server_uri: "ldap://ldap.example.com:389"
+  auth_ldap_bind_dn: "uid=sys_tower_account,cn=user,cn=accounts,dc=example,dc=com"
+  auth_ldap_bind_password: "example_ldap_password"
+  auth_ldap_connection_options: "{u'OPT_NETWORK_TIMEOUT': 30, u'OPT_REFERRALS': 0}"
+  auth_ldap_user_search: "[u'cn=users,cn=accounts,dc=example,dc=com', u'SCOPE_SUBTREE', u'(mail=%(user)s)']"
+  auth_ldap_user_dn_template: ""
+  auth_ldap_user_attr_map: "{u'first_name': u'givenName', u'last_name': u'sn', u'email': u'mail'}"
+  auth_ldap_group_search: "[u'cn=tower_users,cn=groups,cn=accounts,dc=example,dc=com', u'SCOPE_SUBTREE', u'(&(cn=tower_users)(objectClass=groupofuniquenames))']"
+  auth_ldap_group_type: "GroupOfUniqueNamesType"
+  auth_ldap_require_group: ""
+  auth_ldap_deny_group: ""
+  auth_ldap_user_flags_by_group: "{}"
+  auth_ldap_organization_map: "{u'Default': {u'remove_admins': True, u'users': [u'cn=tower_admins,cn=groups,cn=accounts,dc=example,dc=com'], u'remove_users': True}}"
+  auth_ldap_team_map: "{u'Engineering': {u'organization': u'Default', u'users': u'cn=tower_users,cn=groups,cn=accounts,dc=example,dc=com', u'remove': True}}"
+tower_teams:
+  - Engineering
+  - Operations
+tower_ssh_keys:
+  - name: TOWER_SSH_KEY
+    path: /root/.ssh/id_rsa
+    username: root
+    grant:
+      use:
+        - "Engineering"
+tower_scm_keys:
+  - name: GIT_DEPLOY_KEY
+    path: /root/.ssh/git_key
+    username: sys_tower_user
+    password: sys_tower_password_changeme
+    type: password
+    grant:
+      use:
+        - "Engineering"
+tower_projects:
+  - name: "Openshift Automation"
+    description:  "Openshift playbooks"
+    scm_type: git
+    scm_url: "https://github.com/rhcrreeves/openshift-automation.git"
+    scm_branch: master
+    scm_clean: true
+    scm_credential: GIT_DEPLOY_KEY
+    grant: 
+      use:
+         - "Engineering"
+      update:
+         - "Engineering"
+tower_labels:
+  - install
+  - upgrade
+  - oneoff
+  - schedulable
+  - level_3
+  - level_2
+  - level_1
+  - OCP
+  - logging
+  - metrics
+  - registry
+  - maintenance
+  - disaster_recovery
+  - adhoc
+  - simulation
+tower_workflows:
+
+############################################
+#               INSTALL demo_lab01         #
+############################################
+
+  - name: "OCP Installation EndToEnd - demo_lab01 (v3.5)"
+    description: "Workflow to install Openshift on the demo_lab01 cluster"
+    grant:
+      execute:  
+      - Ops
+    extra_vars:
+      openshift_image_tag: v3.5
+      docker_version: "1.12.6"
+      yum_repo_server: repo.example.com
+      openshift_logging_image_version: 3.5.0
+      openshift_hosted_logging_elasticsearch_nodeselector: "logging-es-node=1"
+      openshift_metrics_image_version: 3.5.0
+      elasticsearch_vg: rootvg
+      elasticsearch_lv: elasticsearch
+      elasticsearch_size: 30G
+      openshift_logging_es_cluser_size: 3
+    nodes:
+      ose_ansible_consolidated:
+        action: project_sync
+        project: "Openshift Automation"
+      ocp_pre_install:
+        action: job_template
+        type: On Success
+        inventory: demo_lab01
+        job_type: run
+        job_template: "OCP Pre Install"
+      ocp_install:
+        action: job_template
+        type: On Success
+        inventory: demo_lab01
+        job_type: run
+        job_template: "OCP Installation and Configuration"
+      ocp_install_logging:
+        action: job_template
+        type: On Success
+        inventory: demo_lab01
+        job_type: run
+        job_template: "OCP Install logging (ephemeral) or update logging"
+      ocp_install_metrics:
+        action: job_template
+        type: On Success
+        inventory: demo_lab01
+        job_type: run
+        job_template: "OCP Install metrics or update metrics"
+      ocp_post_install:
+        action: job_template
+        type: On Success
+        inventory: demo_lab01
+        job_type: run
+        job_template: "OCP Post Install"
+    node_associations:
+      "Openshift Automation": "OCP Pre Install"
+      "OCP Pre Install": "OCP Installation and Configuration"
+      "OCP Installation and Configuration": "OCP Install logging (ephemeral) or update logging"
+      "OCP Install logging (ephemeral) or update logging": "OCP Install metrics or update metrics"
+      "OCP Install metrics or update metrics": "OCP Post Install"
+###
+      
+      
+      
+############################################
+#  INSTALL METRICS AND LOGGING demo_lab01 v3.5 #
+############################################     
+ 
+  - name: "OCP Install Metrics and Logging - demo_lab01 (v3.5)"
+    description: "Workflow to install Metrics and Logging on the demo_lab01 cluster"
+    grant:
+      execute:  
+      - Ops
+    extra_vars:
+      openshift_image_tag: v3.5
+      docker_version: "1.12.6"
+      yum_repo_server: repo.example.com
+      openshift_logging_image_vesion: 3.5.0
+      openshift_hosted_logging_elasticsearch_nodeselector: "logging-es-node=1"
+      openshift_metrics_image_version: 3.5.0
+      elasticsearch_vg: rootvg
+      elasticsearch_lv: elasticsearch
+      elasticsearch_size: 30G
+      openshift_logging_es_cluser_size: 3
+    nodes:
+      ose_ansible_consolidated:
+        action: project_sync
+        project: "Openshift Automation"
+      ocp_install_logging:
+        action: job_template
+        type: On Success
+        inventory: demo_lab01
+        job_type: run
+        job_template: "OCP Install logging (ephemeral) or update logging"
+      ocp_install_metrics:
+        action: job_template
+        type: On Success
+        inventory: demo_lab01
+        job_type: run
+        job_template: "OCP Install metrics or update metrics"
+    node_associations:
+      "Openshift Automation": "OCP Install logging (ephemeral) or update logging"
+      "OCP Install logging (ephemeral) or update logging": "OCP Install metrics or update metrics"
+###    
+           
+      
+
+############################################
+#  Start of Tower Job Template Definitions #
+############################################      
+tower_jobs:
+
+############################################
+#    OCP Installation and Configuration    #
+############################################
+
+  - name: "OCP Installation and Configuration"
+    description: "Job to install Openshift from scratch"
+    playbook: "openshift-ansible/playbooks/byo/config.yml"
+    inventory: demo_lab01
+    project: "Openshift Automation"
+    machine_credential: "TOWER_SSH_KEY"
+    extra_vars:
+      openshift_image_tag: v3.4.1.5
+    labels:
+      - install
+
+      - level_2
+      - OCP
+    grant:
+      execute:  
+      - Ops
+###
+
+
+      
+#####################################################
+# OCP Install logging (ephemeral) or update logging #
+#####################################################
+
+  - name: "OCP Install logging (ephemeral) or update logging"
+    description: "Job to install logging on OCP with ephemeral storage and to upgrade."
+    playbook: "openshift-ansible/playbooks/byo/openshift-cluster/openshift-metrics.yml"
+    inventory: demo_lab01
+    project: "Openshift Automation"
+    machine_credential: "TOWER_SSH_KEY"
+    labels:
+      - install
+      - upgrade
+      - level_2
+      - logging
+    grant:
+      execute:  
+      - Ops
+###
+
+
+      
+############################################
+#   OCP Install metrics or update metrics  #
+############################################
+
+  - name: "OCP Install metrics or update metrics"
+    description: "Job to install Openshift metrics from scratch and to upgrade"
+    playbook: "openshift-ansible/playbooks/byo/openshift-cluster/openshift-metrics.yml"
+    inventory: demo_lab01
+    project: "Openshift Automation"
+    machine_credential: "TOWER_SSH_KEY"
+    labels:
+      - install
+      - upgrade
+      - level_2
+      - metrics
+    grant:
+     execute:  
+     - Ops
+###
+
+
+      
+############################################
+#             OCP Post Install             #
+############################################
+      
+  - name: "OCP Post Install"
+    description: "Job to run the OCP post install playbooks."
+    playbook: "playbooks/ocp-post.yml"
+    inventory: demo_lab01
+    project: "Openshift Automation"
+    machine_credential: "TOWER_SSH_KEY"
+    labels:
+      - install
+      - level_2
+      - OCP
+    grant:
+      execute:  
+      - Ops
+###
+
+
+      
+############################################
+#         OCP Registry Post Install        #
+############################################
+  
+  - name: "OCP Registry Post Install"
+    description: "Job to run the OCP post install playbooks for Registry playbooks."
+    playbook: "playbooks/ocp-post-registry.yml"
+    inventory: demo_lab01
+    project: "Openshift Automation"
+    machine_credential: "TOWER_SSH_KEY"
+    labels:
+      - install
+      - level_2
+      - registry
+    grant:
+      execute:  
+      - Ops
+###
+
+
+      
+############################################
+#            OCP Pre Install               #
+############################################
+  
+  - name: "OCP Pre Install"
+    description: "Job to run the OCP pre install playbooks."
+    playbook: "playbooks/ocp-pre.yaml"
+    inventory: demo_lab01
+    project: "Openshift Automation"
+    machine_credential: "TOWER_SSH_KEY"
+    labels:
+      - install
+      - level_2
+      - OCP
+    grant:
+      execute:  
+      - Ops
+###
+
+
+      
+############################################
+#          OCP Check Pre Install           #
+############################################
+  
+  - name: "OCP Check Pre Install"
+    description: "Job to check the OCP pre install playbooks."
+    playbook: "playbooks/ocp-pre.yaml"
+    inventory: demo_lab01
+    project: "Openshift Automation"
+    machine_credential: "TOWER_SSH_KEY"
+    extra_vars:
+      openshift_image_tag: v3.5.5.26
+      docker_version: "1.12.6"
+      yum_repo_server: repo.example.com
+    job_type: "check"
+    labels:
+      - install
+      - level_2
+      - OCP
+    grant:
+      execute:
+      - Ops
+###
+
+
+      
+############################################
+#          OCP v3_4 to v3_5 Upgrade        #
+############################################
+  
+  - name: "OCP v3_4 to v3_5 Upgrade"
+    description: "Job to run the OCP upgrade playbooks."
+    playbook: "openshift-ansible/playbooks/byo/openshift-cluster/upgrades/v3_5/upgrade.yml"
+    inventory: demo_lab01
+    project: "Openshift Automation"
+    machine_credential: "TOWER_SSH_KEY"
+    labels:
+      - upgrade
+      - level_2
+      - OCP
+    grant:
+      execute:  
+      - Ops
+###
+
+
+      
+######################################################
+#            OCP ETCD DR - Simulate Failure        #
+######################################################
+  
+  - name: "OCP ETCD DR - Simulate Failure"
+    description: "Playbook to Simulate ETCD Failure"
+    playbook: "playbooks/adhoc/ocp-etc-dr-simulate.yml"
+    inventory: demo_lab01
+    project: "Openshift Automation"
+    machine_credential: "TOWER_SSH_KEY"
+    labels:
+      - OCP
+      - level_3
+      - DR
+      - adhoc
+      - simulation
+    grant:
+      execute:
+      - Ops
+###
+
+
+      
+##########################################################
+#            OCP ETCD DR - Restore Multi Master        #
+##########################################################
+  
+  - name: "OCP ETCD DR - Restore Multi Master"
+    description: "Playbook to Restore Multi Master ETCD"
+    playbook: "playbooks/adhoc/ocp-etc-dr-fallback.yml"
+    inventory: demo_lab01
+    project: "Openshift Automation"
+    machine_credential: "TOWER_SSH_KEY"
+    labels:
+      - OCP
+      - level_3
+      - DR
+      - adhoc
+    grant:
+      execute:
+      - Ops
+###
+
+
+      
+######################################################
+#           OCP ETCD DR - Recover Single Master      #
+######################################################
+  
+  - name: "OCP ETCD DR - Recover Single Master"
+    description: "Playbook to recover ETCD"
+    playbook: "playbooks/adhoc/ocp-etc-dr-recover.yml"
+    inventory: demo_lab01
+    project: "Openshift Automation"
+    machine_credential: "TOWER_SSH_KEY"
+    labels:
+      - OCP
+      - level_3
+      - DR
+      - adhoc
+    grant:
+      execute:
+      - Ops
+###
+
+
+      
+############################################
+#               OCP Cleanup Jobs           #
+############################################
+  
+  - name: "OCP Cleanup Jobs"
+    description: "Job to cleanup Openshift Jobs across all namespaces"
+    playbook: "playbooks/apply_cleanup_jobs.yaml"
+    inventory: demo_lab01
+    project: "Openshift Automation"
+    machine_credential:  "TOWER_SSH_KEY"
+    labels:
+      - OCP
+      - maintenance
+      - level_2
+    grant:
+      execute:
+      - Ops
+###
+
+      
+##########################################################
+#  demo_lab01 - OCP Soft Clean dangling images & containers  #
+##########################################################
+  
+  - name: "demo_lab01 - OCP Soft Clean dangling images & containers"
+    description: "Job to softly clean up dangling containers & images"
+    playbook: "playbooks/job_docker_remove_dangling.yaml"
+    inventory: demo_lab01
+    project: "Openshift Automation"
+    machine_credential:  "TOWER_SSH_KEY"
+    labels:
+      - maintenance
+      - level_2
+    grant:
+      execute:
+      - "Ops"
+###
+
+
+      
+#####################################################
+#   OCP Brutal Clean dangling images & containers   #
+#####################################################
+  
+  - name: "OCP Brutal Clean dangling images & containers"
+    description: "One-off Job to brutally clean up dangling containers & images"
+    playbook: "playbooks/job_docker_remove_dangling.yaml"
+    inventory: demo_lab01
+    project: "Openshift Automation"
+    machine_credential: "TOWER_SSH_KEY"
+    extra_vars:
+      brutal_rm: true
+    labels:
+      - maintenance
+      - level_3
+    grant:
+      execute:
+      - Ops
+###
+
+
+      
+############################################
+#   OCP Prune registry,builds,deployments  #
+############################################
+  
+  - name: "OCP Prune registry,builds,deployments"
+    description: "Job to cleanup deployments, builds and local registry images"
+    playbook: "playbooks/apply_pruner.yaml"
+    inventory: demo_lab01
+    project: "Openshift Automation"
+    machine_credential: "TOWER_SSH_KEY"
+    labels:
+      - maintenance
+      - level_2
+    grant:
+      execute:
+      - Ops
+###
+
+
+############################################
+#       OCP Uninstall Openshift            #
+############################################
+  
+  - name: "OCP Uninstall Openshift"
+    description: "Job to uninstall OCP"
+    playbook: "openshift-ansible/playbooks/adhoc/uninstall.yml"
+    inventory: demo_lab01
+    project: "Openshift Automation"
+    machine_credential: "TOWER_SSH_KEY"
+    labels:
+      - maintenance
+      - level_3
+    grant:
+      execute:
+      - Ops
+###
+
+
+tower_schedules:
+  - name: "demo_lab01 - OCP Soft Clean dangling images & containers"
+    description: "demo_lab01 - Job to softly clean up dangling containers & images"
+    job_template: "demo_lab01 - OCP Soft Clean dangling images & containers"
+    recurrance: "DTSTART:20170704T230000Z RRULE:FREQ=DAILY;INTERVAL=1"
