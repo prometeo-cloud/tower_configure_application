@@ -1,0 +1,128 @@
+#! /bin/bash
+
+# Script to create a new Job Template in Ansible Tower
+# Assumes that tower-cli is installed and configured
+
+TOWER_CLI="/bin/tower-cli"
+PROJECT="Openshift Automation"
+INVENTORY="{{ inventories[0] }}"
+ORGANIZATION="Default"
+ORGANIZATION_ID=1
+LAST_NODE_ID=false
+
+############################################
+#            UPDATE PROJECT                #
+############################################
+
+# Get Project ID
+PROJECT_ID=`${TOWER_CLI} project list | grep "${PROJECT}" | awk '{ print $1; }'`
+
+# Refresh the project by ID
+${TOWER_CLI} project update ${PROJECT_ID} --wait
+
+############################################
+#               CREATE LABELS              #
+############################################
+
+# What labels do we want?
+{% for label in tower_labels %}
+    ${TOWER_CLI} label create -n "{{ label }}"  --organization ${ORGANIZATION_ID}
+{% endfor %}
+
+${TOWER_CLI} label create -n ${INVENTORY} --organization ${ORGANIZATION_ID}
+
+############################################
+#                 ADD JOBS                 #
+############################################
+{% for job_template in tower_jobs %}
+
+# Create the {{ job_template['name'] }} JOB TEMPLATE
+JT_ID=`${TOWER_CLI} job_template create -n "{{ job_template['name'] }}" -i "{{ job_template['inventory'] }}" -d "{{ job_template['description'] }}" --ask-inventory-on-launch true --project "{{ job_template['project'] }}" --playbook "{{ job_template['playbook'] }}" --machine-credential "{{ job_template['machine_credential'] }}" {% if job_template['extra_vars'] is defined %} -e "{{ job_template['extra_vars'] | to_json }}" --ask-variables-on-launch true {% endif %}  {% if job_template['job_type'] is defined %} --job-type "{{ job_template['job_type'] }}" {% endif %} --force-on-exists | grep "{{ job_template['name'] }}" | awk '{ print $1; }'`
+
+# ADD TEAMS TO EXECUTE JOBS
+{% for grant_type,teams in job_template['grant'].iteritems() %}
+{% for team in teams %}
+${TOWER_CLI} role grant --type "{{ grant_type }}" --team "{{ team }}" --job-template "{{ job_template['name'] }}"
+{% endfor %}
+
+{% endfor %}
+
+{% for label in job_template['labels'] %}
+${TOWER_CLI} job_template associate_label --label {{ label }}  --job-template ${JT_ID}
+{% endfor %}
+{% endfor %}
+
+
+############################################
+#               ADD WORKFLOWS              #
+############################################
+
+# Create the WORKFLOW to install OCP
+{% for workflow in tower_workflows %}
+WORKFLOW_INSTALL_OCP_ID=`${TOWER_CLI} workflow create -n "{{ workflow['name'] }}" -d "{{ workflow['description'] }}" --organization ${ORGANIZATION_ID} {% if workflow['extra_vars'] is defined %} -e '{{ workflow["extra_vars"] | to_json }}' {% endif %} | grep "{{ workflow['name'] }}" | awk '{ print $1; }'`
+
+{% for name,node in workflow['nodes'].iteritems() %}
+
+# IF ACTION IS PROJECT_SYNC DO THIS
+{% if node['action'] == 'project_sync' %}
+if ! $( ${TOWER_CLI} node list -W ${WORKFLOW_INSTALL_OCP_ID}  -f yaml |  grep -q 'name: {{ node["project"] }}$' ) 
+then
+${TOWER_CLI} node create -W ${WORKFLOW_INSTALL_OCP_ID} --project "{{ node['project'] }}"
+fi
+{% endif %}
+
+# END IF
+
+# IF ACTION IS JOB_TEMPLATE DO THIS
+{% if node['action'] == 'job_template' %}
+if ! $( ${TOWER_CLI} node list -W ${WORKFLOW_INSTALL_OCP_ID}  -f yaml |  grep -q 'name: {{ node["job_template"] }}$' ) 
+then
+${TOWER_CLI} node create -W ${WORKFLOW_INSTALL_OCP_ID} --job-template "{{ node['job_template'] }}" --job-type "{{ node['job_type'] }}" --inventory "{{ node['inventory'] }}"
+fi
+{% endif %}
+# END IF
+
+# Do some stuff with nodes
+{% endfor %}
+
+# ADD TEAMS TO EXECUTE WORKFLOWS
+{% for grant_type,teams in workflow['grant'].iteritems() %}
+{% for team in teams %}
+${TOWER_CLI} role grant --type "{{ grant_type }}" --team "{{ team }}" --workflow "{{ workflow['name'] }}"
+{% endfor %}
+
+{% endfor %}
+
+
+{% for parent,child in workflow['node_associations'].iteritems() %}
+PARENT_NODE_ID=
+CHILD_NODE_ID=
+
+# Get Parent ID
+UNIFIED_ID=`${TOWER_CLI} node list -W ${WORKFLOW_INSTALL_OCP_ID}  -f yaml |  grep -B1 'name: {{ parent }}$' |  awk '/id: /{ print $2; }' | head -n1`
+PARENT_NODE_ID=`${TOWER_CLI} node list --unified-job-template ${UNIFIED_ID} -W ${WORKFLOW_INSTALL_OCP_ID} | awk '/[[:digit:]+]/{print $1}' | head -1`
+
+# Get Child ID
+UNIFIED_ID=`${TOWER_CLI} node list -W ${WORKFLOW_INSTALL_OCP_ID}  -f yaml |  grep -B1 'name: {{ child }}$' |  awk '/id: /{ print $2; }' | head -n1`
+CHILD_NODE_ID=`${TOWER_CLI} node list --unified-job-template ${UNIFIED_ID} -W ${WORKFLOW_INSTALL_OCP_ID} | awk '/[[:digit:]+]/{print $1}' | head -1`
+
+# Do the association
+${TOWER_CLI} node associate_success_node  -W ${WORKFLOW_INSTALL_OCP_ID} ${PARENT_NODE_ID} ${CHILD_NODE_ID}
+
+{% endfor %}
+
+
+{% endfor %}
+###
+
+
+############################################
+#               ADD SCHEDULE JOBS          #
+############################################
+{% for schedule in tower_schedules %}
+
+# note that the schedule will stick with the default inventory
+${TOWER_CLI} schedule create -n "{{ schedule['name'] }}" -d "{{ schedule['description'] }}" --job-template "{{ schedule['job_template']}}" --rrule "{{ schedule['recurrance'] }}"
+###
+
+{% endfor %}

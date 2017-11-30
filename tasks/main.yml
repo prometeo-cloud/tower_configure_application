@@ -1,0 +1,20 @@
+---
+# Install new template
+- name: Copy script to tower
+  template:
+    src: "{{ role_path }}/templates/{{ item }}.j2"
+    dest: "{{ tower_dest }}/{{ item }}"
+    mode: u+x
+  with_items: 
+    - add-jobs.sh
+- name: Run script
+  shell: "{{ tower_dest }}/{{ item }}"
+  with_items:
+    - add-jobs.sh
+  
+- name: Cleanup script
+  file: 
+    state: absent
+    path: "{{ tower_dest }}/{{ item }}"
+  with_items: 
+    - add-jobs.sh
