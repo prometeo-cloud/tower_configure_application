@@ -1,31 +1,36 @@
 ---
+- set_fact:
+    student_id: "{{ inventory_hostname_short.split('-')[1] + '-' +  inventory_hostname_short.split('-')[2] }}"
+  when: not student_id is defined
 
-# Bootstrap tower
-- name: Copy bootstrap script to tower
-  template:
-    src: "{{ role_path }}/templates/bootstrap-tower.sh.j2"
-    dest: "{{tower_dest}}/bootstrap-tower.sh"
-    mode: u+x
-  
-- name: Run bootstrap script
-  shell: "{{tower_dest}}/bootstrap-tower.sh"
+- set_fact:
+    tower_host: "localhost"
 
-# Install new template
-- name: Copy script to tower
-  template:
-    src: "{{ role_path }}/templates/{{ item }}.j2"
-    dest: "{{ tower_dest }}/{{ item }}"
-    mode: u+x
-  with_items: 
-    - add-jobs.sh
-- name: Run script
-  shell: "{{ tower_dest }}/{{ item }}"
-  with_items:
-    - add-jobs.sh
-  
-- name: Cleanup after ourselves
-  file: 
-    state: absent
-    path: "{{ tower_dest }}/{{ item }}"
-  with_items: 
-    - add-jobs.sh
+- include: config_type.yml
+
+- include: prereqs.yml
+  when: tower_prereqs_config|bool == true
+
+- include: auth.yml
+  when: tower_cli_credentials_config|bool == true
+
+- include: user.yml
+  when: tower_user_add|bool == true
+
+- include: org.yml
+  when: tower_org_config|bool == true
+
+- include: credentials.yml
+
+- include: inventory.yml
+  when: tower_inventory_config|bool == true
+
+- include: projects.yml
+
+- include: job_templates.yml
+
+- include: workflows.yml
+
+- include: deauth.yml
+  when: not tower_cli_credentials_keep|bool == true
+...
