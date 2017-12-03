@@ -12,9 +12,9 @@ tower_cli_verbosity: "--verbose"
 
 # Tower prerequisites
 tower_prereqs_config: false
-
 # Tower Organization
-tower_org: "Default"
+tower_organisations:
+  - name: openshift_demo
 tower_org_config: false
 
 # Tower machine credential

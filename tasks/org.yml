@@ -1,7 +1,5 @@
-- name: Create Tower Organization
+- name: "Create Tower Organization {{ item.name }}"
   tower_organization:
-    name: "{{ tower_org }}"
+    name: "{{ item.name }}"
     state: present
-    tower_host: "{{ tower_host }}"
-    tower_username: "{{ tower_username }}"
-    tower_password: "{{ tower_password }}"
+  with_items: "{{ tower_organisations }}"

@@ -1,10 +1,4 @@
 ---
-- set_fact:
-    student_id: "test"
-
-- set_fact:
-    tower_host: "localhost"
-
 - include: config_type.yml
 
 - include: prereqs.yml
