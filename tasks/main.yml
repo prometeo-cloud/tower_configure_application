@@ -1,7 +1,6 @@
 ---
 - set_fact:
-    student_id: "{{ inventory_hostname_short.split('-')[1] + '-' +  inventory_hostname_short.split('-')[2] }}"
-  when: not student_id is defined
+    student_id: "test"
 
 - set_fact:
     tower_host: "localhost"
