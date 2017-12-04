@@ -7,6 +7,9 @@
 - include: auth.yml
   when: tower_cli_credentials_config|bool == true
 
+- include: license.yml
+  when tower_license_config|bool == true
+  
 - include: user.yml
   when: tower_user_add|bool == true
 
