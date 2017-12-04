@@ -12,10 +12,26 @@ tower_cli_verbosity: "--verbose"
 
 # Tower prerequisites
 tower_prereqs_config: false
+
+# Tower License
+tower_licence_config: true
+tower_license:
+  company_name: "Example"
+  contact_email: "license@example.com"
+  contact_name: "Example license"
+  hostname: "example"
+  instance_count: 1234
+  license_date: 12345678
+  license_key: "example_license_key_replace_me"
+  license_type: "enterprise"
+  subscription_name: "Example Subscription Name"
+  eula_accepted: true
+  trial: true
+
 # Tower Organization
 tower_organisations:
   - name: openshift_demo
-tower_org_config: false
+tower_org_config: true
 
 # Tower machine credential
 tower_credential_machine: "RHTE SSH"

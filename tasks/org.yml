@@ -1,5 +1,7 @@
+---
 - name: "Create Tower Organization {{ item.name }}"
   tower_organization:
     name: "{{ item.name }}"
     state: present
   with_items: "{{ tower_organisations }}"
+  when: tower_organisations|list
