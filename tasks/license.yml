@@ -1,0 +1,6 @@
+---
+# Configure Tower License
+- name: "Create Tower License {{ item.name }}"
+  shell: "tower-cli setting modify LICENSE {{ tower_license | to_json | quote }}"
+  when: 
+    - tower_license is defined
