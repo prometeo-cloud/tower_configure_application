@@ -1,0 +1,18 @@
+---
+# Configure LDAP auth provider for Tower
+- name: "Create Tower License {{ item.name }}"
+  shell: "tower-cli setting modify {{ item.name }} {{ item.value }}"
+  with_items: "{{ tower_ldap }}"
+  when: 
+    - tower_license is defined
+
+
+
+############################################
+#            CONFIGURE LDAP                #
+############################################
+
+{% for key, value in ldap_configuration.iteritems() %}
+${TOWER_CLI} setting modify {{ key  | upper }} "{{ value }}"
+{% endfor %}
+###
