@@ -78,7 +78,7 @@ tower_master_tag_description: "nodes with the tag 'tag_lab_role_master'"
 tower_node_tag: "tag_lab_role_node"
 tower_node_tag_description: "nodes with the tag 'tag_lab_role_node'"
 
-# Tower projet for provision and configure playbooks
+# Tower project for provision and configure playbooks
 tower_project_provision_and_configure: "Managing OCP from Install and Beyond"
 tower_project_provision_and_configure_config: true
 tower_project_provision_and_configure_description: "Git repo with Ansible playbooks for provision (pre-install) and configure (post-install)"
