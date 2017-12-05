@@ -1,7 +1,4 @@
 ---
-- set_fact:
-    filter: "{{ 'tag' + ':' + 'student_id=' + student_id }}"
-
 - name: Configure Tower Inventory Group
   tower_group:
     tower_host: "{{ tower_host }}"
