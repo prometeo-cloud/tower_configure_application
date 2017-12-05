@@ -35,7 +35,7 @@ tower_license:
 tower_organisations:
   - name: openshift_demo
   - name: "another demo"
-tower_org_config: true
+tower_organisations_config: true
 
 # Tower Credentials
 tower_credentials_config: true
@@ -49,7 +49,15 @@ tower_credentials:
     ssh_key_data: "/root/.ssh/id_rsa"
     username: git
 
-
+tower_inventories_config: true
+tower_inventories:
+  - name: Tower_config
+    description: tower base config inventory
+    project: <project>
+  - name: Tower_config
+    description: tower base config inventory
+    project: <project>
+    
 # Tower inventory
 tower_inventory: "OpenShift"
 tower_inventory_config: true

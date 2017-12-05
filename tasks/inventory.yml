@@ -7,14 +7,13 @@
     - tower_password
     - tower_inventory
     - tower_inventory_description
-    - tower_org
     - tower_inventory_config
 
 - name: Add Tower inventory
   tower_inventory:
     name: "{{ tower_inventory }}"
     description: "{{ tower_inventory_description }}"
-    organization: "{{ tower_org }}"
+    organization: "{{ tower_organisations[0].name }}"
     state: present
     tower_host: "{{ tower_host }}"
     tower_username: "{{ tower_username }}"
@@ -27,7 +26,7 @@
     tower_password: "{{ tower_password }}"
     name: "{{ tower_inventory }}"
     description: "{{ tower_inventory_description }}"
-    organization: "{{ tower_org }}"
+    organization: "{{ tower_organisations[0].name }}"
     variables:
       - student_id: "{{ student_id }}"
       - lab_user: "{{ lab_user }}"

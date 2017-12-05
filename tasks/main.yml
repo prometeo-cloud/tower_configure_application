@@ -12,16 +12,16 @@
   when: tower_user_add|bool == true
 
 - include_tasks: org.yml
-  when: tower_org_config|bool == true
+  when: tower_organisations_config|bool == true
 
 - include_tasks: credentials.yml
   when: tower_credentials_config|bool == true
 
-- include_tasks: inventory.yml
-  when: tower_inventory_config|bool == true
-
 - include_tasks: projects.yml
   when: tower_projects_config|bool == true
+
+- include_tasks: inventory.yml
+  when: tower_inventory_config|bool == true
 
 - include_tasks: job_templates.yml
   when: tower_jobs_config|bool == true
