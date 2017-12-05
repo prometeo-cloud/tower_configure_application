@@ -1,9 +1,12 @@
 ---
-- name: Enable OpenShift repository
+- name: Enable required repositories
   command: >
     subscription-manager repos
-      --enable="rhel-7-server-ose-{{ openshift_deploy_version }}-rpms"
+      --enable="{{ item }}"
   become: true
+  with_items:
+    - rhel-7-server-ose-{{ openshift_deploy_version }}-rpms
+    - rhel-7-server-optional-rpms
 
 - name: Install package requirements for Tower CLI
   yum:

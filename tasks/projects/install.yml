@@ -26,4 +26,5 @@
     tower_host: "{{ tower_host }}"
     tower_username: "{{ tower_username }}"
     tower_password: "{{ tower_password }}"
+    scm_credential: "{{ tower_scm_credential }}"
 ...

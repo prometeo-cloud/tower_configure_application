@@ -14,10 +14,13 @@
     scm_clean: "{{ tower_project_provision_and_configure_clean }}"
     scm_update_on_launch: "{{ tower_project_provision_and_configure_update_on_launch }}"
     scm_delete_on_update: "{{ tower_project_provision_and_configure_delete_on_update }}"
+    scm_credential: "{{ tower_scm_credential }}"
 
 - name: Update Project for Provision and Configure
   command: >
     tower-cli project update
+      -u {{ tower_username }}
+      -p {{ tower_password }}
       --name "{{ tower_project_provision_and_configure }}"
       --wait
       "{{ tower_cli_verbosity }}"
