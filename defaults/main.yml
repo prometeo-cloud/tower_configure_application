@@ -87,31 +87,31 @@ tower_master_tag_description: "nodes with the tag 'tag_lab_role_master'"
 tower_node_tag: "tag_lab_role_node"
 tower_node_tag_description: "nodes with the tag 'tag_lab_role_node'"
 
-# Tower project for provision and configure playbooks
-tower_project_provision_and_configure: "Managing OCP from Install and Beyond"
-tower_project_provision_and_configure_config: true
-tower_project_provision_and_configure_description: "Git repo with Ansible playbooks for provision (pre-install) and configure (post-install)"
-tower_project_provision_and_configure_type: "git"
-tower_project_provision_and_configure_url: "https://github.com/sabre1041/managing-ocp-install-beyond.git"
-tower_project_provision_and_configure_branch: "rhte"
-tower_project_provision_and_configure_local_branch: ""
-tower_project_provision_and_configure_clean: "yes"
-tower_project_provision_and_configure_update_on_launch: "no"
-tower_project_provision_and_configure_delete_on_update: "no"
+# Tower Projects
+tower_projects_configure: true
+tower_projects:
+  - name: "Managing OCP from Install and Beyond"
+    description: "Git repo with Ansible playbooks for provision (pre-install) and configure (post-install)"
+    organization: "Default"
+    kind: "provision"
+    config: true
+    scm_type: "git"
+    url: "https://github.com/sabre1041/managing-ocp-install-beyond.git"
+    branch: "rhte"
+    clean: "yes"
+    update_on_launch: false
+    delete_on_update: false
+  - name: "openshift-ansible"
+    description: "Red Hat OpenShift Container Platform Ansible Playbooks"
+    organization: "Default"
+    kind: "install"
+    config: false
+    scm_type: "manual"
+    url: ""
+    branch: ""
+    package: "openshift-ansible-playbooks"
+    local_path: "share"
 
-# Tower project for install
-tower_project_install: "openshift-ansible"
-tower_project_install_config: false
-tower_project_install_package: "openshift-ansible-playbooks"
-tower_project_install_description: "Red Hat OpenShift Container Platform Ansible Playbooks"
-tower_project_install_type: "manual"
-tower_project_install_url: ""
-tower_project_install_branch: ""
-tower_project_install_local_path: "share"
-tower_project_install_source_path: "/usr/share/ansible/openshift-ansible/"
-tower_project_install_clean: "yes"
-tower_project_install_update_on_launch: "no"
-tower_project_install_delete_on_update: "no"
 
 # Tower job template for self-configure
 tower_job_template_self_configure: "0-Self-Configure"

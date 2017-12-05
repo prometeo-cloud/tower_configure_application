@@ -1,6 +1,50 @@
 ---
-- include_tasks: projects/provision_and_configure.yml
-  when: tower_project_provision_and_configure_config|bool == true
-- include_tasks: projects/install.yml
-  when: tower_project_install_config|bool == true
+- name: Install Project - install packages
+  yum:
+    name: "{{ item.package }}"
+    state: present
+  become: true
+  when: item.kind == "install"
+  with_items: "{{ tower_projects | default([]) }}"
+
+- name: Install Project- Create symbolic link to /usr/share
+  file:
+    src: /usr/share
+    dest: "{{ tower_projects_root }}/share"
+    owner: awx
+    group: awx
+    state: link
+  become: true
+  when: item.kind == "install"
+  with_items: "{{ tower_projects | default([]) }}"
+
+- name: Install/Provision Project
+  tower_project:
+    name: "{{ item.name }}"
+    description: "{{ item.description }}"
+    state: present
+    tower_host: "{{ tower_host }}"
+    tower_username: "{{ tower_username }}"
+    tower_password: "{{ tower_password }}"
+    scm_credential: "{{ tower_scm_credential }}"
+    organization: "{{ item.organization }}"
+    scm_type: "{{ item.scm_type }}"
+    local_path: "{{ item.local_path | default(omit) }}"
+    scm_clean: "{{ item.clean | default(omit) }}"
+    scm_update_on_launch: "{{ item.update_on_launch | default(omit) }}"
+    scm_delete_on_update: "{{ item.delete_on_update | default(omit) }}"
+    scm_url: "{{ item.url | default(omit) }}"
+    scm_branch: "{{ item.branch | default(omit) }}"
+  with_items: "{{ tower_projects | default([]) }}"
+
+- name: Provision Project - update
+  command: >
+    tower-cli project update
+      -u {{ tower_username }}
+      -p {{ tower_password }}
+      --name "{{ item.name }}"
+      --wait
+      "{{ tower_cli_verbosity }}"
+  when: item.kind == "provision"
+  with_items: "{{ tower_projects | default([]) }}"
 ...
