@@ -17,6 +17,7 @@
   when: tower_org_config|bool == true
 
 - include: credentials.yml
+  when: tower_credentials_config|bool == true
 
 - include: inventory.yml
   when: tower_inventory_config|bool == true
