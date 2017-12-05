@@ -1,34 +1,34 @@
 ---
-- include: prereqs.yml
+- include_tasks: prereqs.yml
   when: tower_prereqs_config|bool == true
 
-- include: auth.yml
+- include_tasks: auth.yml
   when: tower_cli_credentials_config|bool == true
 
-- include: license.yml
+- include_tasks: license.yml
   when: tower_license_config|bool == true
   
-- include: user.yml
+- include_tasks: user.yml
   when: tower_user_add|bool == true
 
-- include: org.yml
+- include_tasks: org.yml
   when: tower_org_config|bool == true
 
-- include: credentials.yml
+- include_tasks: credentials.yml
   when: tower_credentials_config|bool == true
 
-- include: inventory.yml
+- include_tasks: inventory.yml
   when: tower_inventory_config|bool == true
 
-- include: projects.yml
+- include_tasks: projects.yml
   when: tower_projects_config|bool == true
 
-- include: job_templates.yml
+- include_tasks: job_templates.yml
   when: tower_jobs_config|bool == true
 
-- include: workflows.yml
+- include_tasks: workflows.yml
   when: tower_jobs_config|bool == true
 
-- include: deauth.yml
+- include_tasks: deauth.yml
   when: not tower_cli_credentials_keep|bool == true
 ...
