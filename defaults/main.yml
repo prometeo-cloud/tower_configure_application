@@ -4,17 +4,20 @@ tower_username: admin
 tower_password: "{{ tower_password }}"
 tower_projects_root: "/var/lib/awx/projects"
 tower_user_add: true
+tower_host: "{{ ansible_host }}"
 
 # Tower CLI config
 tower_cli_credentials_config: true
 tower_cli_credentials_keep: true
 tower_cli_verbosity: "--verbose"
+tower_cli_user: cli_user
+tower_cli_password: cli_pass1234
 
 # Tower prerequisites
 tower_prereqs_config: false
 
 # Tower License
-tower_licence_config: true
+tower_license_config: true
 tower_license:
   company_name: "Example"
   contact_email: "license@example.com"
