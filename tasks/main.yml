@@ -6,7 +6,7 @@
   when: tower_cli_credentials_config|bool == true
 
 - include: license.yml
-  when tower_license_config|bool == true
+  when: tower_license_config|bool == true
   
 - include: user.yml
   when: tower_user_add|bool == true
@@ -21,10 +21,13 @@
   when: tower_inventory_config|bool == true
 
 - include: projects.yml
+  when: tower_projects_config|bool == true
 
 - include: job_templates.yml
+  when: tower_jobs_config|bool == true
 
 - include: workflows.yml
+  when: tower_jobs_config|bool == true
 
 - include: deauth.yml
   when: not tower_cli_credentials_keep|bool == true
