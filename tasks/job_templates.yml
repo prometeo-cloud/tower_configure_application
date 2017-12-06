@@ -10,7 +10,7 @@
     state: present
     inventory: "{{ tower_inventory }}"
     cloud_credential: "{{ tower_credential_cloud }}"
-    project: "{{ tower_project_provision_and_configure }}"
+    project: "{{ item.project }}"
     playbook: "{{ item.playbook }}"
     machine_credential: "{{ tower_credential_machine }}"
     become_enabled: "{{ item.become_enabled | default(omit) }}"
