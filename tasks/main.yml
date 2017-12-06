@@ -21,7 +21,7 @@
   when: tower_projects_config|bool == true
 
 - include_tasks: inventory.yml
-  when: tower_inventory_config|bool == true
+  when: tower_inventories_config|bool == true
 
 - include_tasks: job_templates.yml
   when: tower_jobs_config|bool == true
