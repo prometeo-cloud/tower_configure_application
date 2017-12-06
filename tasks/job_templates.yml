@@ -1,23 +1,43 @@
 ---
-- include_tasks: job_templates/self_configure.yml
-  when: tower_job_template_self_configure_config|bool == true
-- include_tasks: job_templates/deploy_provision.yml
-  when: tower_job_template_deploy_provision_config|bool == true
-- include_tasks: job_templates/deploy_install.yml
-  when: tower_job_template_deploy_install_config|bool == true
-- include_tasks: job_templates/deploy_configure.yml
-  when: tower_job_template_deploy_configure_config|bool == true
-- include_tasks: job_templates/scaleup_provision.yml
-  when: tower_job_template_scaleup_provision_config|bool == true
-- include_tasks: job_templates/scaleup_install.yml
-  when: tower_job_template_scaleup_install_config|bool == true
-- include_tasks: job_templates/scaleup_configure.yml
-  when: tower_job_template_scaleup_configure_config|bool == true
-- include_tasks: job_templates/terminate_ocp.yml
-  when: tower_job_template_terminate_ocp_config|bool == true
-- include_tasks: job_templates/terminate_all.yml
-  when: tower_job_template_terminate_all_config|bool == true
-- include_tasks: job_templates/job_launch_self_configure.yml
+- name: Configure Job Template
+  tower_job_template:
+    tower_host: "{{ tower_host }}"
+    tower_username: "{{ tower_username }}"
+    tower_password: "{{ tower_password }}"
+    job_type: run
+    name: "{{ item.name }}"
+    description: "{{ item.description }}"
+    state: present
+    inventory: "{{ tower_inventory }}"
+    cloud_credential: "{{ tower_credential_cloud }}"
+    project: "{{ tower_project_provision_and_configure }}"
+    playbook: "{{ item.playbook }}"
+    machine_credential: "{{ tower_credential_machine }}"
+    become_enabled: "{{ item.become_enabled | default(omit) }}"
+  with_items: "{{ tower_templates | default([]) }}"
+
+- name: Copy Job Template for Extra Variables file
+  template:
+    src: "{{ item.extra_vars_path }}"
+    dest: "/tmp/{{ item.extra_vars_path }}"
+  when: item.job_template == "copy"
+  with_items: "{{ tower_templates | default([]) }}"
+
+- name: Update Job Template with Extra Vars
+  command: >
+    tower-cli job_template modify
+      -u {{ tower_username }}
+      -p {{ tower_password }}
+      --name="{{ item.name }}"
+      --extra-vars="@/tmp/{{ item.extra_vars_path }}"
+      "{{ tower_cli_verbosity }}"
+  when: (item.job_template == "copy") or (item.job_template == "update")
+  with_items: "{{ tower_templates | default([]) }}"
+
+- name: Launch Job for Self-Configure - this will block while the job runs and will wait up to {{ tower_job_self_configure_launch_async | int // 60 }} minutes to complete, see Tower UI Jobs for detailed progress
+  command: tower-cli job launch --job-template {{ tower_job_template_self_configure }} --monitor
+  async: "{{ tower_job_self_configure_launch_async }}"
+  poll: "{{ tower_job_self_configure_launch_poll }}"
   when:
     - tower_job_self_configure_launch|bool == true
     - tower_job_template_self_configure_config|bool == true
