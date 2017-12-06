@@ -23,8 +23,8 @@
 - include_tasks: inventory.yml
   when: tower_inventories_config|bool == true
 
-- include_tasks: job_templates.yml
-  when: tower_jobs_config|bool == true
+- include_tasks: templates.yml
+  when: tower_templates_config | bool == true
 
 - include_tasks: workflows.yml
   when: tower_jobs_config|bool == true
