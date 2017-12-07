@@ -23,6 +23,10 @@
   include_tasks: credentials.yml
   when: tower_credentials_config|bool == true
 
+- name: Install packages required for projects, such as openshift-ansible-3.5
+  include_tasks: packages.yml
+  when: tower_packages_config|bool == true
+
 - name: Create Ansible Tower projects
   include_tasks: projects.yml
   when: tower_projects_config|bool == true

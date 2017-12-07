@@ -94,9 +94,10 @@ tower_inventories:
     organization: "Default"
     project: "openshift-ansible"
     source: "file"
-    
+tower_packages_config: false
+
 # Tower Projects
-tower_projects_configure: true
+tower_projects_config: true
 tower_projects:
   - name: "Managing OCP from Install and Beyond"
     description: "Git repo with Ansible playbooks for provision (pre-install) and configure (post-install)"
