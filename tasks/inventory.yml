@@ -12,7 +12,7 @@
   register: command_output
   with_items: "{{ tower_inventories }}"
 
-- debug: msg="{{command_output.stdout}}"
+- debug: msg="{{command_output}}"
 
 - name: Add source to inventry project
   shell: tower-cli inventory_source create -n "{{item.name | quote }}" --inventory "{{command_output.stdout | quote }}" --source-project "{{item.project | quote }}" --source "{{item.source | quote }}" --overwrite --overwrite-vars
