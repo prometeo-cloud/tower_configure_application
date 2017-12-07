@@ -1,36 +1,27 @@
 ---
-- debug:
-    var: "{{ item }}"
-  with_items:
-    - tower_host
-    - tower_username
-    - tower_password
-    - tower_inventory
-    - tower_inventory_description
-    - tower_inventory_config
-
-- name: Add Tower inventory
+- name: Add Tower inventory, update, or destroy inventory
   tower_inventory:
-    name: "{{ tower_inventory }}"
-    description: "{{ tower_inventory_description }}"
-    organization: "{{ tower_organisations[0].name }}"
+    name: "{{ item.name }}"
+    description: "{{ item.description }}"
+    organization: "{{ item.organization }}"
     state: present
-    tower_host: "{{ tower_host }}"
-    tower_username: "{{ tower_username }}"
-    tower_password: "{{ tower_password }}"
+    with_items: "{{ tower_inventories }}"
 
-- name: Configure Tower Inventory
-  tower_inventory:
-    tower_host: "{{ tower_host }}"
-    tower_username: "{{ tower_username }}"
-    tower_password: "{{ tower_password }}"
-    name: "{{ tower_inventory }}"
-    description: "{{ tower_inventory_description }}"
-    organization: "{{ tower_organisations[0].name }}"
-    variables:
-      - student_id: "{{ student_id }}"
-      - lab_user: "{{ lab_user }}"
+- name: registering ID of inventory
+  command: `tower-cli inventory create -n "{{item.name}}" --organization 'Default' | grep "{{item.name}}" | awk '{print $1;}'`
+  register: command_output
+  with_items: "{{ tower_inventories }}"
 
-- include_tasks: inventory/groups.yml
-  when: tower_inventory_group_config|bool == true
-...
+- debug: msg="{{command_output.stdout}}"
+
+- name: Add source to inventry project
+  shell: tower-cli inventory_source create -n "{{item.name}}" --inventory "{{command_output.stdout}" --source-project "{{item.project}}" --source "file" --overwrite --overwrite-vars
+  with_items: "{{ tower_inventories }}"  
+
+- name: Update Inventory for tower-inventory
+  command: >
+    tower-cli inventory batch_update
+      --name "{{ item.name }}"
+      --wait
+      "{{ tower_cli_verbosity }}"
+  with_items: "{{ tower_inventories }}"

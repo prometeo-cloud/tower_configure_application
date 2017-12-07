@@ -83,12 +83,14 @@ tower_credentials:
 
 tower_inventories_config: true
 tower_inventories:
-  - name: Tower_config
-    description: tower base config inventory
-    project: <project>
-  - name: Tower_config
-    description: tower base config inventory
-    project: <project>
+  - name: "tower_config"
+    description: "tower base config inventory"
+    organization: "Default" 
+    project: "test"
+  - name: "customer_build_1"
+    description: "customer build 1"
+    organization: "Default"
+    project: "customer test 1"
     
 # Tower inventory
 tower_inventory: "OpenShift"
