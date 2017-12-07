@@ -81,45 +81,18 @@ tower_credentials:
       username: git
     organization: openshift_demo
 
+# Tower inventory
 tower_inventories_config: true
 tower_inventories:
-  - name: "tower_config"
+  - name: "Managing OCP from Install and Beyond"
     description: "tower base config inventory"
     organization: "Default" 
-    project: "test"
-  - name: "customer_build_1"
+    project: "Managing OCP from Install and Beyond"
+  - name: "openshift-ansible"
     description: "customer build 1"
     organization: "Default"
-    project: "customer test 1"
-    
-# Tower inventory
-tower_inventory: "OpenShift"
-tower_inventory_config: true
-tower_inventory_description: "Inventory for all AWS Instances"
-tower_inventory_group: "AWS"
-tower_inventory_group_config: true
-tower_inventory_group_description: "AWS dynamic inventory"
-tower_inventory_group_source: "ec2"
-tower_inventory_group_update_on_launch: "yes"
-tower_inventory_group_overwrite: "no"
-tower_inventory_group_source_vars:
-  regions: "{{ aws_region }}"
-  destination_format: "{0}"
-  destination_format_tags: "Name"
-tower_inventory_sync: true
-tower_openshift_install_group: "OSEv3"
-tower_openshift_install_group_config: false
-tower_openshift_install_group_description: "All OCP nodes"
-tower_openshift_masters_group: "masters"
-tower_openshift_masters_group_config: false
-tower_openshift_masters_description: "OCP masters"
-tower_openshift_nodes_group: "nodes"
-tower_openshift_nodes_group_config: false
-tower_openshift_nodes_description: "OCP nodes"
-tower_master_tag: "tag_lab_role_master"
-tower_master_tag_description: "nodes with the tag 'tag_lab_role_master'"
-tower_node_tag: "tag_lab_role_node"
-tower_node_tag_description: "nodes with the tag 'tag_lab_role_node'"
+    project: "openshift-ansible"
+
 
 # Tower Projects
 tower_projects_configure: true
