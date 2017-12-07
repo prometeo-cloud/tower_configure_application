@@ -4,9 +4,6 @@
     name: "{{ item.name }}"
     description: "{{ item.description }}"
     state: present
-    tower_host: "{{ tower_host }}"
-    tower_username: "{{ tower_username }}"
-    tower_password: "{{ tower_password }}"
     scm_credential: "{{ item.scm_credential }}"
     organization: "{{ item.organization }}"
     scm_type: "{{ item.scm_type }}"
