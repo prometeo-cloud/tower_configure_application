@@ -29,12 +29,12 @@
     scm_credential: "{{ tower_scm_credential }}"
     organization: "{{ item.organization }}"
     scm_type: "{{ item.scm_type }}"
-    local_path: "{{ item.local_path | default(omit) }}"
-    scm_clean: "{{ item.clean | default(omit) }}"
-    scm_update_on_launch: "{{ item.update_on_launch | default(omit) }}"
-    scm_delete_on_update: "{{ item.delete_on_update | default(omit) }}"
-    scm_url: "{{ item.url | default(omit) }}"
-    scm_branch: "{{ item.branch | default(omit) }}"
+    local_path: "{{ item.local_path | default(None) }}"
+    scm_clean: "{{ item.clean | default(None) }}"
+    scm_update_on_launch: "{{ item.update_on_launch | default(None) }}"
+    scm_delete_on_update: "{{ item.delete_on_update | default(None) }}"
+    scm_url: "{{ item.url | default(None) }}"
+    scm_branch: "{{ item.branch | default(None) }}"
   with_items: "{{ tower_projects | default([]) }}"
 
 - name: Provision Projects - update
