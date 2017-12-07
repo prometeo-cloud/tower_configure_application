@@ -1,20 +1,48 @@
 ---
-- include_tasks: workflows/deploy.yml
-  when: tower_workflow_template_deploy_config|bool == true
-- include_tasks: workflows/scaleup.yml
-  when: tower_workflow_template_scaleup_config|bool == true
-- include_tasks: workflows/terminate.yml
-  when: tower_workflow_template_terminate_config|bool == true
-- include_tasks: workflows/job_launch_deploy.yml
-  when: 
-    - tower_workflow_job_deploy_launch|bool == true
-    - tower_workflow_template_deploy_config|bool == true
-- include_tasks: workflows/job_launch_scaleup.yml
-  when: 
-    - tower_workflow_job_scaleup_launch|bool == true
-    - tower_workflow_template_scaleup_config|bool == true
-- include_tasks: workflows/job_launch_terminate.yml
-  when: 
-    - tower_workflow_job_terminate_launch|bool == true
-    - tower_workflow_template_terminate_config|bool == true
+- name: Copy Workflow Template
+  template:
+    src: "{{ item.extra_vars }}"
+    dest: "/tmp/{{ item.extra_vars }}"
+  when: item.extra_vars is defined
+  with_items: "{{ tower_workflows }}"
+
+- name: Create Workflow Template - with extra vars
+  command: >
+    tower-cli workflow create
+      --name="{{ item.name }}"
+      --description="{{ item.description }}"
+      --organization="{{ tower_organisations[0].name }}"
+      --extra-vars="@/tmp/{{ item.extra_vars }}"
+      "{{ tower_cli_verbosity }}"
+  when: item.extra_vars is defined
+  with_items: "{{ tower_workflows }}"
+
+- name: Create Workflow Template - without extra vars
+  command: >
+    tower-cli workflow create
+      --name="{{ item.name }}"
+      --description="{{ item.description }}"
+      --organization="{{ tower_organisations[0].name }}"
+      "{{ tower_cli_verbosity }}"
+  when: item.extra_vars is not defined
+  with_items: "{{ tower_workflows }}"
+
+- name: Copy Workflow Template Schema
+  template:
+    src: "{{ item.schema_path }}"
+    dest: "/tmp/{{ item.schema_path }}"
+  with_items: "{{ tower_workflows }}"
+
+- debug: var=tower_templates[1].name
+
+- name: Create Workflow Schema
+  command: tower-cli workflow schema {{ item.name | quote }} @/tmp/{{ item.schema_path | quote }} "{{ tower_cli_verbosity }}"
+  with_items: "{{ tower_workflows }}"
+
+- name: Launch Workflow Job - this will block while the job runs and will wait up to {{ item.launch_async // 60 }} minutes to complete, see Tower UI Jobs for detailed progress
+  command: tower-cli workflow_job launch -W {{ item.name }} --monitor
+  async: "{{ item.launch_async }}"
+  poll: "{{ item.launch_poll }}"
+  when: item.launch == true
+  with_items: "{{ tower_workflows }}"
 ...

@@ -1,4 +1,5 @@
 ---
-- job_template: "{{ tower_job_template_terminate_ocp }}"
+- job_template: "{{ tower_templates[7].name }}"
   success_nodes:
-  - job_template: "{{ tower_job_template_terminate_all }}"
+  - job_template: "{{ tower_templates[8].name }}"
+...

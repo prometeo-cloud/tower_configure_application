@@ -1,6 +1,7 @@
 ---
-- job_template: "{{ tower_job_template_scaleup_provision }}"
+- job_template: "{{ tower_templates[4].name }}"
   success_nodes:
-  - job_template: "{{ tower_job_template_scaleup_install }}"
+  - job_template: "{{ tower_templates[5].name }}"
     success_nodes:
-    - job_template: "{{ tower_job_template_scaleup_configure }}"
+    - job_template: "{{ tower_templates[6].name }}"
+...

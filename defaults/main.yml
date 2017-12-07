@@ -192,46 +192,29 @@ tower_job_self_configure_launch_async: 300
 # Workflow job polling
 tower_job_self_configure_launch_poll: 15
 
-# Tower Workflow Assets for Deploy job
-tower_workflow_template_deploy: "1-Deploy_OpenShift_on_AWS"
-tower_workflow_template_deploy_config: false
-tower_workflow_template_deploy_description: "Deploy OpenShift on AWS."
-# Place any variables that will be available to all job templates and inventory hosts
-tower_workflow_template_deploy_extra_vars: "tower_workflow_template_deploy_extra_vars.yml"
-# Wire up job_templates for Deploy in this file
-tower_workflow_template_deploy_schema_path: "tower_workflow_template_deploy_schema.yml"
-# Set to true to launch the workflow job at the end of the configuration. Set to true will only have an effect if also setting tower_config: true. This is useful for full end to end testing.
-tower_workflow_job_deploy_launch: false
-# Workflow job timeout in seconds
-tower_workflow_job_deploy_launch_async: 2700
-# Workflow job polling
-tower_workflow_job_deploy_launch_poll: 60
-
-# Tower Workflow Assets for Scaleup job
-tower_workflow_template_scaleup: "2-Scaleup_OpenShift_on_AWS"
-tower_workflow_template_scaleup_config: false
-tower_workflow_template_scaleup_description: "Scaleup OpenShift on AWS"
-# Place any variables that will be available to all job templates and inventory hosts
-tower_workflow_template_scaleup_extra_vars: "{{ tower_workflow_template_deploy_extra_vars }}"
-# Wire up job_templates for Scaleup in this file
-tower_workflow_template_scaleup_schema_path: "tower_workflow_template_scaleup_schema.yml"
-# Set to true to launch the workflow job at the end of the configuration. Set to true will only have an effect if also setting tower_config: true. This is useful for full end to end testing.
-tower_workflow_job_scaleup_launch: false
-# Workflow job timeout in seconds
-tower_workflow_job_scaleup_launch_async: 1200
-# Workflow job polling
-tower_workflow_job_scaleup_launch_poll: 60
-
-# Tower Workflow Assets for Terminate job
-tower_workflow_template_terminate: "3-Terminate_All"
-tower_workflow_template_terminate_config: false
-tower_workflow_template_terminate_description: "Terminate instances (including self) on AWS"
-# Wire up job_templates for Terminate in this file
-tower_workflow_template_terminate_schema_path: "tower_workflow_template_terminate_schema.yml"
-# Set to true to launch the workflow job at the end of the configuration. Set to true will only have an effect if also setting tower_config: true. This is useful for full end to end testing.
-tower_workflow_job_terminate_launch: false
-# Workflow job timeout in seconds
-tower_workflow_job_terminate_launch_async: 360
-# Workflow job polling
-tower_workflow_job_terminate_launch_poll: 0
+# Tower workflows
+tower_workflows_config: true
+tower_workflows:
+  - name: "1-Deploy_OpenShift_on_AWS"
+    description: "1-Deploy_OpenShift_on_AWS"
+    config: false
+    extra_vars: "tower_workflow_template_deploy_extra_vars.yml"
+    schema_path: "tower_workflow_template_deploy_schema.yml"
+    template: 2
+    launch: false
+    launch_async: 2700
+    launch_poll: 60
+  - name: "2-Scaleup_OpenShift_on_AWS"
+    description: "Scaleup OpenShift on AWS"
+    extra_vars: "tower_workflow_template_deploy_extra_vars.yml"
+    schema_path: "tower_workflow_template_scaleup_schema.yml"
+    launch: false
+    launch_async: 1200
+    launch_poll: 60
+  - name: "3-Terminate_All"
+    description: "Terminate instances (including self) on AWS"
+    schema_path: "tower_workflow_template_terminate_schema.yml"
+    launch: false
+    launch_async: 360
+    launch_poll: 0
 ...

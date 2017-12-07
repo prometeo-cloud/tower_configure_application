@@ -1,5 +1,5 @@
 ---
-- name: Install Project - install packages
+- name: Install Projects - install packages
   yum:
     name: "{{ item.package }}"
     state: present
@@ -7,7 +7,7 @@
   when: item.kind == "install"
   with_items: "{{ tower_projects | default([]) }}"
 
-- name: Install Project- Create symbolic link to /usr/share
+- name: Install Projects - Create symbolic link to /usr/share
   file:
     src: /usr/share
     dest: "{{ tower_projects_root }}/share"
@@ -18,7 +18,7 @@
   when: item.kind == "install"
   with_items: "{{ tower_projects | default([]) }}"
 
-- name: Install/Provision Project
+- name: Install/Provision Projects
   tower_project:
     name: "{{ item.name }}"
     description: "{{ item.description }}"
@@ -37,7 +37,7 @@
     scm_branch: "{{ item.branch | default(omit) }}"
   with_items: "{{ tower_projects | default([]) }}"
 
-- name: Provision Project - update
+- name: Provision Projects - update
   command: >
     tower-cli project update
       -u {{ tower_username }}
