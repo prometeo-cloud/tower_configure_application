@@ -97,7 +97,7 @@ tower_inventories:
 tower_packages_config: false
 
 # Tower Projects
-tower_projects_config: true
+tower_projects_configure: true
 tower_projects:
   - name: "Managing OCP from Install and Beyond"
     description: "Git repo with Ansible playbooks for provision (pre-install) and configure (post-install)"
@@ -107,19 +107,22 @@ tower_projects:
     scm_type: "git"
     url: "https://github.com/sabre1041/managing-ocp-install-beyond.git"
     branch: "rhte"
-    clean: "yes"
+    clean: yes
     update_on_launch: false
     delete_on_update: false
+    scm_credential: "GIT SSH"
   - name: "openshift-ansible"
     description: "Red Hat OpenShift Container Platform Ansible Playbooks"
     organization: "Default"
     kind: "install"
     config: false
-    scm_type: "manual"
-    url: ""
-    branch: ""
-    package: "openshift-ansible-playbooks"
-    local_path: "share"
+    url: "https://github.com/openshift/origin"
+    scm_type: "git"
+    branch: "release-3.6"
+    clean: yes
+    scm_credential: "GIT SSH"
+    update_on_launch: false
+    delete_on_update: false
 
 # Tower Templates
 tower_templates_config: true
