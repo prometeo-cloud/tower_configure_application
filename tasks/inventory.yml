@@ -5,17 +5,17 @@
     description: "{{ item.description }}"
     organization: "{{ item.organization }}"
     state: present
-    with_items: "{{ tower_inventories }}"
+  with_items: "{{ tower_inventories }}"
 
 - name: registering ID of inventory
-  command: `tower-cli inventory create -n "{{item.name}}" --organization 'Default' | grep "{{item.name}}" | awk '{print $1;}'`
+  shell: tower-cli inventory create -n "{{item.name | quote }}" --organization "{{item.organization | quote }}" | grep "{{item.name | quote }}" | awk '{print $1;}'
   register: command_output
   with_items: "{{ tower_inventories }}"
 
 - debug: msg="{{command_output.stdout}}"
 
 - name: Add source to inventry project
-  shell: tower-cli inventory_source create -n "{{item.name}}" --inventory "{{command_output.stdout}" --source-project "{{item.project}}" --source "file" --overwrite --overwrite-vars
+  shell: tower-cli inventory_source create -n "{{item.name | quote }}" --inventory "{{command_output.stdout | quote }}" --source-project "{{item.project | quote }}" --source "{{item.source | quote }}" --overwrite --overwrite-vars
   with_items: "{{ tower_inventories }}"  
 
 - name: Update Inventory for tower-inventory

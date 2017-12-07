@@ -88,12 +88,13 @@ tower_inventories:
     description: "tower base config inventory"
     organization: "Default" 
     project: "Managing OCP from Install and Beyond"
+    source: "file"
   - name: "openshift-ansible"
     description: "customer build 1"
     organization: "Default"
     project: "openshift-ansible"
-
-
+    source: "file"
+    
 # Tower Projects
 tower_projects_configure: true
 tower_projects:
