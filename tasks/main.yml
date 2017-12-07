@@ -37,7 +37,7 @@
 
 - name: Create Ansible Tower workflows
   include_tasks: workflows.yml
-  when: tower_jobs_config|bool == true
+  when: tower_templates_config|bool == true
 
 - name: Remove Ansible Tower cli credentials
   include_tasks: deauth.yml
