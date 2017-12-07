@@ -41,13 +41,17 @@ tower_organisations_config: true
 tower_credentials_config: true
 tower_credentials:
   - name: "TOWER SSH"
-    kind: machine
+    description: SSH Key for tower machine access
+    credential-type: Machine
     ssh_key_data: "/root/.ssh/id_rsa"
     username: root
+    organization: openshift_demo
   - name: "GIT SSH"
-    kind: scm
+    description: SSH Key for gitlab access
+    credential-type: Machine
     ssh_key_data: "/root/.ssh/id_rsa"
     username: git
+    organization: openshift_demo
 
 tower_inventories_config: true
 tower_inventories:
