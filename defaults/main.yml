@@ -42,7 +42,7 @@ tower_credentials_config: true
 tower_credentials:
   - name: "TOWER SSH"
     description: SSH Key for tower machine access
-    credential_type: Machine
+    credential_type: 1
     details:
       ssh_key_data: |
         -----BEGIN RSA PRIVATE KEY-----
@@ -62,7 +62,7 @@ tower_credentials:
     organization: openshift_demo
   - name: "GIT SSH"
     description: SSH Key for gitlab access
-    credential_type: Machine
+    credential_type: 2
     details:
       ssh_key_data: |
         -----BEGIN RSA PRIVATE KEY-----
