@@ -1,34 +1,45 @@
 ---
-- include_tasks: prereqs.yml
+- name: Install Ansible Tower prerequisites
+  include_tasks: prereqs.yml
   when: tower_prereqs_config|bool == true
 
-- include_tasks: auth.yml
+- name: Create Ansible Tower cli credentials
+  include_tasks: auth.yml
   when: tower_cli_credentials_config|bool == true
 
-- include_tasks: license.yml
+- name: Setup Ansible Tower license
+  include_tasks: license.yml
   when: tower_license_config|bool == true
   
-- include_tasks: user.yml
+- name: Create Ansible Tower users
+  include_tasks: user.yml
   when: tower_user_add|bool == true
 
-- include_tasks: org.yml
+- name: Create Ansible Tower organisations
+  include_tasks: org.yml
   when: tower_organisations_config|bool == true
 
-- include_tasks: credentials.yml
+- name: Create Ansible Tower credentials
+  include_tasks: credentials.yml
   when: tower_credentials_config|bool == true
 
-- include_tasks: projects.yml
+- name: Create Ansible Tower projects
+  include_tasks: projects.yml
   when: tower_projects_config|bool == true
 
-- include_tasks: inventory.yml
+- name: Create Ansible Tower inventories
+  include_tasks: inventory.yml
   when: tower_inventories_config|bool == true
 
-- include_tasks: templates.yml
+- name: Create Ansible Tower templates
+  include_tasks: templates.yml
   when: tower_templates_config | bool == true
 
-- include_tasks: workflows.yml
+- name: Create Ansible Tower workflows
+  include_tasks: workflows.yml
   when: tower_jobs_config|bool == true
 
-- include_tasks: deauth.yml
+- name: Remove Ansible Tower cli credentials
+  include_tasks: deauth.yml
   when: not tower_cli_credentials_keep|bool == true
 ...
