@@ -1,0 +1,19 @@
+---
+- name: Install Projects - install packages
+  yum:
+    name: "{{ item.package }}"
+    state: present
+  become: true
+  when: item.kind == "install"
+  with_items: "{{ tower_packages | default([]) }}"
+
+- name: Install Projects - Create symbolic link to /usr/share
+  file:
+    src: /usr/share
+    dest: "{{ tower_projects_root }}/share"
+    owner: awx
+    group: awx
+    state: link
+  become: true
+  when: item.kind == "install"
+  with_items: "{{ tower_packages | default([]) }}"
