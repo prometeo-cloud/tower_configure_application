@@ -13,7 +13,7 @@
     project: "{{ item.project }}"
     playbook: "{{ item.playbook }}"
     machine_credential: "{{ tower_credential_machine }}"
-    become_enabled: "{{ item.become_enabled | default(omit) }}"
+    become_enabled: "{{ item.become_enabled | default(None) }}"
   with_items: "{{ tower_templates | default([]) }}"
 
 - name: Copy Job Template for Extra Variables file
