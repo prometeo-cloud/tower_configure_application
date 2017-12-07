@@ -37,17 +37,21 @@ tower_organisations:
   - name: "another demo"
 tower_organisations_config: true
 
-# Tower Credentials
+# Tower Credentials (valid kinds are ssh,net,scm,aws,rax,vmware,satellite6,cloudforms,gce,azure,azure_rm,openstack)
 tower_credentials_config: true
 tower_credentials:
   - name: "TOWER SSH"
-    kind: machine
+    description: SSH Key for tower machine access
+    kind: ssh
     ssh_key_data: "/root/.ssh/id_rsa"
     username: root
+    organisation: openshift_demo
   - name: "GIT SSH"
+    description: SSH Key for gitlab access
     kind: scm
     ssh_key_data: "/root/.ssh/id_rsa"
     username: git
+    organisation: openshift_demo
 
 tower_inventories_config: true
 tower_inventories:
