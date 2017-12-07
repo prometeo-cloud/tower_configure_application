@@ -8,15 +8,30 @@
   with_items: "{{ tower_inventories }}"
 
 - name: registering ID of inventory
-  shell: tower-cli inventory create -n "{{item.name | quote }}" --organization "{{item.organization | quote }}" | grep "{{item.name | quote }}" | awk '{print $1;}'
+  shell: tower-cli inventory create -n "{{ item.name | quote }}" --organization "{{ item.organization | quote }}" | grep "{{ item.name | quote }}" #| awk '{print $1}'
   register: command_output
   with_items: "{{ tower_inventories }}"
 
-- debug: msg="{{command_output.stdout}}"
+- debug: var=command_output
 
-- name: Add source to inventry project
-  shell: tower-cli inventory_source create -n "{{item.name | quote }}" --inventory "{{command_output.stdout | quote }}" --source-project "{{item.project | quote }}" --source "{{item.source | quote }}" --overwrite --overwrite-vars
-  with_items: "{{ tower_inventories }}"  
+- set_fact:
+    inventories_list: "{{ command_output | json_query('results[].stdout') }}"
+
+- debug: var=inventories_list
+
+- debug:
+    msg: "Match: {{ item[1].name }} to {{ item[0] }}  - id {{ item[0].split(' ')[1] }}"
+  when: item[0].find(item[1].name | quote) != -1
+  with_nested:
+    - "{{ inventories_list | list }}"
+    - "{{ tower_inventories }}"
+
+- name: Add source to inventory project
+  shell: tower-cli inventory_source create -n "{{ item[1].name | quote }}" --inventory "{{ item[0].split(' ')[1] }}" --source-project "{{item[1].project | quote }}" --source "{{item[1].source | quote }}" --overwrite true --overwrite-vars true
+  when: item[0].find(item[1].name | quote) != -1
+  with_nested:
+    - "{{ inventories_list | list }}"
+    - "{{ tower_inventories }}"
 
 - name: Update Inventory for tower-inventory
   command: >
