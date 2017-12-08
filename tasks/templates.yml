@@ -23,8 +23,6 @@
 - name: Update Job Template with Extra Vars
   command: >
     tower-cli job_template modify
-      -u {{ tower_username }}
-      -p {{ tower_password }}
       --name="{{ item.name }}"
       --extra-vars="@/tmp/{{ item.extra_vars_path }}"
       "{{ tower_cli_verbosity }}"
