@@ -22,6 +22,5 @@
   command: >
     tower-cli inventory batch_update
       --name "{{ item.name }}"
-      --wait
       "{{ tower_cli_verbosity }}"
   with_items: "{{ tower_inventories }}"
