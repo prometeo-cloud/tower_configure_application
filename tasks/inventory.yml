@@ -14,7 +14,7 @@
 
 - debug: msg="{{command_output}}"
 
-- name: Add source to inventry project
+- name: Add source to inventory project
   shell: tower-cli inventory_source create -n "{{ item.sources[0].name | quote }}" --inventory "{{ item.name }}" --source-project "{{item.sources[0].project }}" --source "{{item.sources[0].type  }}" --overwrite true --overwrite-vars true
   with_items: "{{ tower_inventories }}"  
 
