@@ -4,7 +4,7 @@
     name: "{{ item.name | quote }}"
     description: "{{ item.description | quote }}"
     state: present
-    scm_credential: "{{ item.scm_credential }}"
+    scm_credential: "{{ item.scm_credential | quote }}"
     organization: "{{ item.organization | quote }}"
     scm_type: "{{ item.scm_type }}"
     local_path: "{{ item.local_path | default(None) }}"
