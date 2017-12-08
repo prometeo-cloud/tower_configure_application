@@ -1,11 +1,11 @@
 ---
 - name: Install/Provision Projects
   tower_project:
-    name: "{{ item.name | quote }}"
-    description: "{{ item.description | quote }}"
+    name: "{{ item.name }}"
+    description: "{{ item.description }}"
     state: present
-    scm_credential: "{{ item.scm_credential | quote }}"
-    organization: "{{ item.organization | quote }}"
+    scm_credential: "{{ item.scm_credential }}"
+    organization: "{{ item.organization }}"
     scm_type: "{{ item.scm_type }}"
     local_path: "{{ item.local_path | default(None) }}"
     scm_clean: "{{ item.clean | default(None) }}"

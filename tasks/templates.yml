@@ -1,18 +1,15 @@
 ---
 - name: Configure Job Template
   tower_job_template:
-    tower_host: "{{ tower_host }}"
-    tower_username: "{{ tower_username }}"
-    tower_password: "{{ tower_password }}"
     job_type: run
     name: "{{ item.name }}"
     description: "{{ item.description }}"
     state: present
-    inventory: "{{ tower_inventory }}"
-    cloud_credential: "{{ tower_credential_cloud }}"
+    inventory: "{{ item.inventory }}"
+    cloud_credential: "{{ item.cloud_credential | default(None) }}"
     project: "{{ item.project }}"
     playbook: "{{ item.playbook }}"
-    machine_credential: "{{ tower_credential_machine }}"
+    machine_credential: "{{ item.machine_credential | default(None) }}"
     become_enabled: "{{ item.become_enabled | default(None) }}"
   with_items: "{{ tower_templates | default([]) }}"
 
