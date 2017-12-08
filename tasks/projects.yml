@@ -1,11 +1,11 @@
 ---
 - name: Install/Provision Projects
   tower_project:
-    name: "{{ item.name }}"
-    description: "{{ item.description }}"
+    name: "{{ item.name | quote }}"
+    description: "{{ item.description | quote }}"
     state: present
-    scm_credential: "{{ item.scm_credential }}"
-    organization: "{{ item.organization }}"
+    scm_credential: "{{ item.scm_credential | quote }}"
+    organization: "{{ item.organization | quote }}"
     scm_type: "{{ item.scm_type }}"
     local_path: "{{ item.local_path | default(None) }}"
     scm_clean: "{{ item.clean | default(None) }}"
@@ -18,8 +18,6 @@
 - name: Provision Projects - update
   command: >
     tower-cli project update
-      -u {{ tower_username }}
-      -p {{ tower_password }}
       --name "{{ item.name }}"
       --wait
       "{{ tower_cli_verbosity }}"
