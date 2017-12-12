@@ -7,13 +7,6 @@
     state: present
   with_items: "{{ tower_inventories }}"
 
-- name: registering ID of inventory
-  shell: tower-cli inventory create -n "{{item.name | quote }}" --organization "{{item.organization | quote }}" | grep "{{item.name | quote }}" | awk '{print $1;}'
-  register: command_output
-  with_items: "{{ tower_inventories }}"
-
-- debug: msg="{{command_output}}"
-
 - name: Add source to inventory project
   shell: tower-cli inventory_source create -n "{{ item.sources[0].name | quote }}" --inventory "{{ item.name }}" --source-project "{{item.sources[0].project }}" --source "{{item.sources[0].type  }}" --source-path "{{ item.sources[0].path }}" --update-on-project-update true --overwrite true --overwrite-vars true
   with_items: "{{ tower_inventories }}"  
