@@ -20,6 +20,19 @@
   when: item.job_template == "copy"
   with_items: "{{ tower_templates | default([]) }}"
 
+- name: Update Template Prompt on Launch options
+  command: >
+    tower-cli job_template modify
+      --name="{{ item.name }}"
+      --ask-credential-on-launch="{{ item.ask_credential | default(false) }}"
+      --ask-inventory-on-launch="{{ item.ask_inventory | default(false) }}"
+      --ask-job-type-on-launch="{{ item.ask_job_type | default(false) }}"
+      --ask-skip-tags-on-launch="{{ item.ask_skip_tags | default(false) }}"
+      --ask-tags-on-launch="{{ item.ask_tags | default(false) }}"
+      --ask-variables-on-launch="{{ item.ask_extra_vars | default(false) }}"
+      "{{ tower_cli_verbosity }}"
+  with_items: "{{ tower_templates | default([]) }}"
+
 - name: Update Job Template with Extra Vars
   command: >
     tower-cli job_template modify
