@@ -15,6 +15,10 @@
   include_tasks: user.yml
   when: tower_user_add|bool == true
 
+- name: Create LDAP configuration
+  include_tasks: ldap.yml
+  when: tower_ldap_config|bool == true  
+
 - name: Create Ansible Tower organisations
   include_tasks: org.yml
   when: tower_organisations_config|bool == true
