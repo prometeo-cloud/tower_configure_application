@@ -1,7 +1,7 @@
 ---
 # Configure LDAP auth provider for Tower
 - name: "Create LDAP configuration"
-  shell: "tower-cli setting modify {{ item.key | quote  }} {{ item.value | quote }}"
+  shell: "tower-cli setting modify {{ item.key | upper  }} {{ item.value | quote }}"
   with_items: "{{ tower_ldap_configuration }}"
   when: 
     - tower_ldap_configuration is defined
