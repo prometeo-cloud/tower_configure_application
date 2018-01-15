@@ -29,6 +29,19 @@
   when: (item.job_template == "copy") or (item.job_template == "update")
   with_items: "{{ tower_templates | default([]) }}"
 
+- name: Update Template Prompt on Launch options
+  command: >
+    tower-cli job_template modify
+      --name="{{ item.name }}"
+      --ask-credential-on-launch="{{ item.ask_credential | default(false) }}"
+      --ask-inventory-on-launch="{{ item.ask_inventory | default(false) }}"
+      --ask-job-type-on-launch="{{ item.ask_job_type | default(false) }}"
+      --ask-skip-tags-on-launch="{{ item.ask_skip_tags | default(false) }}"
+      --ask-tags-on-launch="{{ item.ask_tags | default(false) }}"
+      --ask-variables-on-launch="{{ item.ask_extra_vars | default(false) }}"
+      "{{ tower_cli_verbosity }}"
+  with_items: "{{ tower_templates | default([]) }}"
+
 - name: Launch Job for Self-Configure - this will block while the job runs and will wait up to {{ tower_job_self_configure_launch_async | int // 60 }} minutes to complete, see Tower UI Jobs for detailed progress
   command: tower-cli job launch --job-template {{ tower_job_template_self_configure }} --monitor
   async: "{{ tower_job_self_configure_launch_async }}"
