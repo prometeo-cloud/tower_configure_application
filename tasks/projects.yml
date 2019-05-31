@@ -13,6 +13,7 @@
     scm_delete_on_update: "{{ item.delete_on_update | default(None) }}"
     scm_url: "{{ item.url | default(None) }}"
     scm_branch: "{{ item.branch | default(None) }}"
+    tower_verify_ssl: false
   with_items: "{{ tower_projects | default([]) }}"
 
 - name: Provision Projects - update

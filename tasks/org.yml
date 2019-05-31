@@ -3,5 +3,6 @@
   tower_organization:
     name: "{{ item.name }}"
     state: present
+    tower_verify_ssl: false
   with_items: "{{ tower_organisations }}"
   when: tower_organisations|list

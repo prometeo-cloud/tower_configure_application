@@ -5,6 +5,7 @@
     description: "{{ item.description }}"
     organization: "{{ item.organization }}"
     state: present
+    tower_verify_ssl: false
   with_items: "{{ tower_inventories }}"
 
 - name: Add source to inventory project
