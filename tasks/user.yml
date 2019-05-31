@@ -6,4 +6,5 @@
     email: "{{ tower_cli_user + '@example.com' }}"
     state: present
     superuser: true
+    tower_verify_ssl: false
 ...
